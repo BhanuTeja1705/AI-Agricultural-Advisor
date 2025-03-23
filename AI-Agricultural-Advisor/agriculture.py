@@ -22,50 +22,55 @@ genai.configure(api_key=GENAI_API_KEY)
 WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather"
 
 # ================== BACKGROUND IMAGE FUNCTION ==================
-def add_bg_from_local(image_file):
-    with open(image_file, "rb") as img_file:
-        encoded_string = base64.b64encode(img_file.read())
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: url("data:image/jpg;base64,{encoded_string.decode()}");
-            background-size: cover;
-            background-attachment: fixed;
-            color: #FFFFFF;
-        }}
-        .block-container {{
-            background-color: rgba(0, 0, 0, 0.65);
-            padding: 2rem;
-            border-radius: 15px;
-        }}
-        .css-1d391kg {{
-            padding: 1rem;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }}
-        .stButton > button {{
-            background-color: #4CAF50;
-            color: white;
-            padding: 0.75em 1.5em;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }}
-        .stButton > button:hover {{
-            background-color: #45a049;
-        }}
-        .stTextInput > div > input {{
-            background-color: rgba(255, 255, 255, 0.9);
-            color: black;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+def add_bg_from_url(image_url):
+    response = requests.get(image_url)
+    if response.status_code == 200:
+        encoded_string = base64.b64encode(response.content)
+        st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url("data:image/jpg;base64,{encoded_string.decode()}");
+                background-size: cover;
+                background-attachment: fixed;
+                color: #FFFFFF;
+            }}
+            .block-container {{
+                background-color: rgba(0, 0, 0, 0.65);
+                padding: 2rem;
+                border-radius: 15px;
+            }}
+            .css-1d391kg {{
+                padding: 1rem;
+                background-color: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+            }}
+            .stButton > button {{
+                background-color: #4CAF50;
+                color: white;
+                padding: 0.75em 1.5em;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+                transition: background-color 0.3s ease;
+            }}
+            .stButton > button:hover {{
+                background-color: #45a049;
+            }}
+            .stTextInput > div > input {{
+                background-color: rgba(255, 255, 255, 0.9);
+                color: black;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+    else:
+        st.error("Failed to load background image.")
 
-add_bg_from_local('ag5.jpg')
+# Add background image from URL
+background_image_url = "https://i.pinimg.com/736x/48/3b/4e/483b4eb7c2d89e7058e420eedf2dbf33.jpg"
+add_bg_from_url(background_image_url)
 
 # ================== FUNCTIONS ==================
 def get_weather(city):
@@ -126,7 +131,7 @@ def recognize_voice_input():
         audio = recognizer.listen(source)
     try:
         text = recognizer.recognize_google(audio)
-        detected_lang = 'auto'  # Simplified detection for now
+        detected_lang = 'auto'
         st.success(f"✅ Detected Language: {detected_lang.upper()}")
         return text, detected_lang
     except sr.UnknownValueError:
