@@ -21,7 +21,7 @@ genai.configure(api_key=GENAI_API_KEY)
 # Weather API Endpoint
 WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather"
 
-# ================== BACKGROUND IMAGE FUNCTION ==================
+# ================== BACKGROUND IMAGE FUNCTION (URL BASED) ==================
 def add_bg_from_url(image_url):
     response = requests.get(image_url)
     if response.status_code == 200:
@@ -68,9 +68,9 @@ def add_bg_from_url(image_url):
     else:
         st.error("Failed to load background image.")
 
-# Add background image from URL
-background_image_url = "https://i.pinimg.com/736x/48/3b/4e/483b4eb7c2d89e7058e420eedf2dbf33.jpg"
-add_bg_from_url(background_image_url)
+# Call the function with your URL
+bg_image_url = "https://i.pinimg.com/736x/48/3b/4e/483b4eb7c2d89e7058e420eedf2dbf33.jpg"
+add_bg_from_url(bg_image_url)
 
 # ================== FUNCTIONS ==================
 def get_weather(city):
@@ -163,7 +163,6 @@ tabs = st.tabs([
     "🎙 Voice Interaction"
 ])
 
-# Common language selection options
 languages = {
     'English': 'en',
     'Telugu': 'te',
