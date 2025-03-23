@@ -10,65 +10,65 @@ from gtts import gTTS
 import base64
 
 # ================== CONFIGURATION ==================
-st.set_page_config(page_title="🌾 AI-Powered Agricultural Advisor", layout="wide")  # FIRST Streamlit command!
+st.set_page_config(
+    page_title="🌾 AI-Powered Agricultural Advisor",
+    layout="wide"
+)
 
-GENAI_API_KEY = "AIzaSyDPAjI3VeKDVaQ_5LB61owH1uZJoiQjKiU"  # Replace with your Gemini API Key
-WEATHER_API_KEY = "247d4ce6aa5e4ed6783c194649dd14a8"  # Replace with your OpenWeatherMap API Key
+GENAI_API_KEY = "AIzaSyDPAjI3VeKDVaQ_5LB61owH1uZJoiQjKiU"
+WEATHER_API_KEY = "247d4ce6aa5e4ed6783c194649dd14a8"
 
 # Initialize Gemini
 genai.configure(api_key=GENAI_API_KEY)
 
-# Weather API Endpoint
 WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather"
 
 # ================== BACKGROUND IMAGE FUNCTION (URL BASED) ==================
 def add_bg_from_url(image_url):
-    response = requests.get(image_url)
-    if response.status_code == 200:
-        encoded_string = base64.b64encode(response.content)
-        st.markdown(
-            f"""
-            <style>
-            .stApp {{
-                background-image: url("data:image/jpg;base64,{encoded_string.decode()}");
-                background-size: cover;
-                background-attachment: fixed;
-                color: #FFFFFF;
-            }}
-            .block-container {{
-                background-color: rgba(0, 0, 0, 0.65);
-                padding: 2rem;
-                border-radius: 15px;
-            }}
-            .css-1d391kg {{
-                padding: 1rem;
-                background-color: rgba(255, 255, 255, 0.1);
-                border-radius: 10px;
-            }}
-            .stButton > button {{
-                background-color: #4CAF50;
-                color: white;
-                padding: 0.75em 1.5em;
-                border: none;
-                border-radius: 10px;
-                font-size: 16px;
-                transition: background-color 0.3s ease;
-            }}
-            .stButton > button:hover {{
-                background-color: #45a049;
-            }}
-            .stTextInput > div > input {{
-                background-color: rgba(255, 255, 255, 0.9);
-                color: black;
-            }}
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
-    else:
-        st.error("Failed to load background image.")
+    try:
+        response = requests.get(image_url, timeout=10)
+        if response.status_code == 200:
+            encoded_string = base64.b64encode(response.content)
+            st.markdown(
+                f"""
+                <style>
+                .stApp {{
+                    background-image: url("data:image/jpg;base64,{encoded_string.decode()}");
+                    background-size: cover;
+                    background-attachment: fixed;
+                    color: #FFFFFF;
+                }}
+                .block-container {{
+                    background-color: rgba(0, 0, 0, 0.65);
+                    padding: 2rem;
+                    border-radius: 15px;
+                }}
+                .stButton > button {{
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 0.75em 1.5em;
+                    border: none;
+                    border-radius: 10px;
+                    font-size: 16px;
+                    transition: background-color 0.3s ease;
+                }}
+                .stButton > button:hover {{
+                    background-color: #45a049;
+                }}
+                .stTextInput > div > input {{
+                    background-color: rgba(255, 255, 255, 0.9);
+                    color: black;
+                }}
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            st.warning("⚠️ Failed to load background image. Status Code:", response.status_code)
+    except Exception as e:
+        st.warning(f"⚠️ Error loading background image: {e}")
 
-# Call the function with your URL
+# ✅ Call the function with an ONLINE IMAGE URL
 bg_image_url = "https://i.pinimg.com/736x/48/3b/4e/483b4eb7c2d89e7058e420eedf2dbf33.jpg"
 add_bg_from_url(bg_image_url)
 
@@ -96,23 +96,14 @@ def get_gemini_advice(prompt, model_name='gemini-1.5-pro-latest'):
 def detect_disease_from_image(image_bytes):
     try:
         model = genai.GenerativeModel('gemini-1.5-pro-latest')
-        response = model.generate_content(
-            [
-                {
-                    "parts": [
-                        {
-                            "inline_data": {
-                                "mime_type": "image/jpeg",
-                                "data": image_bytes
-                            }
-                        },
-                        {
-                            "text": "Analyze this crop image. Identify any plant disease, and suggest treatments and preventive measures in detail."
-                        }
-                    ]
-                }
-            ]
-        )
+        response = model.generate_content([
+            {
+                "parts": [
+                    {"inline_data": {"mime_type": "image/jpeg", "data": image_bytes}},
+                    {"text": "Analyze this crop image. Identify any plant disease, and suggest treatments and preventive measures in detail."}
+                ]
+            }
+        ])
         return response.text
     except Exception as e:
         return f"❌ Vision Model Error: {e}"
