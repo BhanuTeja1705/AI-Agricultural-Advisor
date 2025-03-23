@@ -14,9 +14,3 @@ This project is an **AI-powered Agricultural Advisor** designed to assist farmer
 ✅ Multilingual Chat Support  
 ✅ Built with Streamlit and Gemini API
 
-## How to Run Locally
-```bash
-git clone https://github.com/BhanuTeja1705/AI-Agricultural-Advisor.git
-cd AI-Agricultural-Advisor
-pip install -r requirements.txt
-python agriculture.py
